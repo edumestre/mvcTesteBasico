@@ -1,0 +1,75 @@
+﻿@model IEnumerable<CamadaDTO.AlunoDTO>
+@{
+    ViewBag.Title = "Index";
+}
+
+@{
+    if (ViewBag.ErroPagina != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <a href="javascript:void(0)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @ViewBag.ErroPagina
+        </div>
+    }
+
+    if (Session["ErroPagina"] != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <a href="javascript:void(0)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @Session["ErroPagina"]
+        </div>
+
+        Session["ErroPagina"] = null;
+    }
+
+    if (Session["Sucesso"] != null)
+    {
+        <div class="alert alert-success alert-dismissable">
+            <a href="javascript:void(0)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @Session["Sucesso"]
+        </div>
+
+        Session["Sucesso"] = null;
+    }
+}
+
+<h2>Lista de alunos</h2>
+
+<div class="col-sm-12">
+
+    <table width="100%">
+        <thead>
+            <tr>
+                <th colspan="3">
+                    @*@Html.ActionLink("Novo curso", "Inserir", null, new { target = "_blank" })*@
+                    @Html.ActionLink("Novo aluno", "NovoAluno", new { idCurso = ViewBag.IdCurso }, null)
+                </th>
+            </tr>
+            <tr>
+                <th>Aluno</th>
+                <th>E-mail</th>
+                <th>Editar</th>
+                <th>Remover</th>
+            </tr>
+        </thead>
+        @{
+            if (Model != null)
+            {
+                foreach (var aluno in Model)
+                {
+                    <tr>
+                        <td>@aluno.NomeAluno</td>
+                        <td>@aluno.EmailAluno</td>
+                        <td>
+                            @Html.ActionLink("Editar", "Aluno", "Aluno", new { idAluno = aluno.Id }, null)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Remover", "Delete", "Aluno", new { idAluno = aluno.Id }, new { @class = "text-danger" })
+                        </td>
+                    </tr>
+                }
+            }
+        }
+    </table>
+</div>
+

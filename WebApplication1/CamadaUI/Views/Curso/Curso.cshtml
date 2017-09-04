@@ -1,0 +1,57 @@
+﻿@model CamadaDTO.CursoDTO
+@{
+    ViewBag.Title = "Curso";
+}
+
+@{
+    if (ViewBag.ErroPagina != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <a href="javascript:void(0)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @ViewBag.ErroPagina
+
+            @Html.ValidationSummary()
+
+        </div>
+    }
+}
+
+@{
+    if (Model.Id == 0)
+    {
+        <h2>Inserir curso</h2>
+    }
+    else
+    {
+        <h2>Curso @Model.NomeCurso</h2>
+    }
+}
+
+<div class="col-sm-12">
+
+    @using (Html.BeginForm("Curso", "Curso", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.HiddenFor(m => m.Id)
+
+        <div class="form-group col-sm-8">
+            <label class="control-label">Nome:</label>
+            @Html.TextBoxFor(m => m.NomeCurso, new { @class = "form-control", required = "required" })
+        </div>
+
+        <div class="form-group col-sm-4">
+            <label class="control-label">Valor:</label>
+            @Html.TextBoxFor(m => m.ValorCurso, new { @class = "form-control", required = "required" })
+            @*No momento, usamos o tipo number do html5, mas, seria ideal um campo com máscara de moeda. Para melhoria*@
+        </div>
+
+        <div>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <button type="reset" class="btn btn-default">Cancelar</button>
+            @Html.ActionLink("Alunos do curso", "Index", "Aluno", new { idCurso = Model.Id }, new { @class = "btn btn-default" })
+        </div>
+    }
+
+</div>
+<br />
+<br />
+

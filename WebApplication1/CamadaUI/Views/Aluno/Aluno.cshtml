@@ -1,0 +1,123 @@
+﻿@model CamadaDTO.AlunoDTO
+@{
+    ViewBag.Title = "Aluno";
+}
+
+@{
+    if (ViewBag.ErroPagina != null)
+    {
+        <div class="alert alert-danger alert-dismissable">
+            <a href="javascript:void(0)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @ViewBag.ErroPagina
+
+            @Html.ValidationSummary()
+
+        </div>
+    }
+}
+
+@{
+    if (Model.Id == 0)
+    {
+        <h2>Inserir aluno</h2>
+    }
+    else
+    {
+        <h2>Aluno @Model.NomeAluno</h2>
+    }
+}
+
+MODELO DE FORMULÁRIO SALVANDO USANDO JQUERY/AJAX, NÃO REDIRECIONANDO
+
+<div class="col-sm-12">
+
+    @using (Html.BeginForm("Aluno", "Aluno", FormMethod.Post, new { id = "formAluno", @class = "form-horizontal" }))
+    {
+        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.IdCurso)
+
+        <div class="form-group col-sm-8">
+            <label class="control-label">Nome:</label>
+            @Html.TextBoxFor(m => m.NomeAluno, new { @class = "form-control", required = "required" })
+        </div>
+
+        <div class="form-group col-sm-4">
+            <label class="control-label">E-mail:</label>
+            @Html.TextBoxFor(m => m.EmailAluno, new { @class = "form-control", type = "email", required = "required" })
+            @*No momento, usamos o tipo number do html5, mas, seria ideal um campo com máscara de moeda. Para melhoria*@
+        </div>
+
+        <div>
+            <button type="submit" id="btn-salvar-aluno" class="btn btn-primary">Salvar</button>
+            <button type="reset" id="btn-cancelar" class="btn btn-default">Cancelar</button>
+            @Html.ActionLink("Voltar para alunos do curso", "Index", "Aluno", new { idCurso = Model.IdCurso }, new { @class = "btn btn-default" })
+        </div>
+    }
+
+</div>
+<br />
+<br />
+@section styles {
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Scripts/toastr.js"></script>
+
+    <script>
+
+        // TODO: melhorar, colocar em um arquivo Aluno.js, na pasta Scripts e referenciar aqui
+
+        $(document).ready(function () {
+
+            $('#formAluno').submit(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('#btn-salvar-aluno').val('Aguarde...');
+                $('#btn-salvar-aluno').prop('disabled', 'disabled');
+                $('#btn-salvar-aluno').attr('disabled', 'disabled');
+
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        if (result == null) {
+                            toastr.error('Sem resposta do servidor');
+                            $('#btn-salvar-aluno').val('Salvar');
+                            $('#btn-salvar-aluno').removeAttr('disabled');
+
+                        }
+                        else {
+                            if (result.erro != null) {
+                                toastr.error(result.erro, "Erro");
+                                $('#btn-salvar-aluno').val('Salvar');
+                                $('#btn-salvar-aluno').removeAttr('disabled');
+
+                            } else {
+                                $('#btn-salvar-aluno').val('Salvar');
+                                $('#btn-salvar-aluno').removeAttr('disabled');
+
+                                toastr.success(result.sucesso);
+
+                                if (parseInt($('#formAluno input[name="Id"]').val()) === 0) {
+                                    $('#btn-cancelar').trigger('click');
+                                }
+                            }
+                        }
+                    },
+                    error: function (error, errorText, status) {
+                        console.log(error);
+                        toastr.error(errorText + ' - ' + status, "Erro");
+                        $('#btn-salvar-aluno').val('Salvar');
+                        $('#btn-salvar-aluno').removeAttr('disabled');
+                    }
+                });
+
+                return false;
+            });
+        });
+
+    </script>
+}
+
